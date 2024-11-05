@@ -3,20 +3,25 @@ package main
 import (
 	"context"
 	"flag"
-	"hotelReservetion/api"
-	"hotelReservetion/db"
-	"log"
-
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"hotelReservetion/api"
+	"hotelReservetion/db"
+	"log"
 )
 
 const (
 	dburi    = "mongodb://localhost:27017"
-	dbname   = "hotel-reservertion"
+	dbname   = "hotel-reservation-db"
 	userColl = "users"
 )
+
+var config = fiber.Config{
+	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+		return ctx.JSON(map[string]string{"error": err.Error()})
+	},
+}
 
 func main() {
 	// package for command-line argument parsing.
@@ -31,10 +36,10 @@ func main() {
 	// DATABASE INIT
 	mongoDBInit := db.NewMongoUserStore(client)
 
-	// Handlers initilizaion
+	// Handlers initialization
 	userHandler := api.NewUserHandler(mongoDBInit)
 
-	app := fiber.New()
+	app := fiber.New(config)
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/users", userHandler.HandleGetUsers)
