@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,12 +13,18 @@ import (
 
 const userColl = "users"
 
+type Dropper interface {
+	Drop(ctx context.Context) error
+}
+
 type UserStore interface {
+	Dropper
+
 	GetUserById(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
 	DeleteUserById(context.Context, string) (*types.User, error)
-	UpdateUserById(ctx context.Context, filter bson.M, update bson.M) error
+	UpdateUserById(ctx context.Context, filter bson.M, update types.UpdateUserParams) error
 }
 
 type MongoUserStore struct {
@@ -25,17 +32,17 @@ type MongoUserStore struct {
 	coll *mongo.Collection
 }
 
-func NewMongoUserStore(db *mongo.Client) *MongoUserStore {
-	coll := db.Database(DBNAME).Collection(userColl)
+func NewMongoUserStore(db *mongo.Client, dbName string) *MongoUserStore {
+	coll := db.Database(dbName).Collection(userColl)
 	return &MongoUserStore{
 		db:   db,
 		coll: coll,
 	}
 }
 
-func (h *MongoUserStore) UpdateUserById(ctx context.Context, filter bson.M, update bson.M) error {
+func (h *MongoUserStore) UpdateUserById(ctx context.Context, filter bson.M, params types.UpdateUserParams) error {
 	updateDoc := bson.M{
-		"$set": update,
+		"$set": params.ToBSON(),
 	}
 
 	_, err := h.coll.UpdateOne(ctx, filter, updateDoc)
@@ -107,4 +114,14 @@ func (h *MongoUserStore) GetUserById(ctx context.Context, id string) (*types.Use
 	}
 
 	return &user, nil
+}
+
+func (h *MongoUserStore) Drop(ctx context.Context) error {
+	fmt.Println("----Dropping user collection------")
+	err := h.coll.Drop(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

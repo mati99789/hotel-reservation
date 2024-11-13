@@ -3,4 +3,4 @@ build:
 run: build
 	@./bin/api
 test:
-	@go test -v ./...
+	@go test -v ./... -count=1

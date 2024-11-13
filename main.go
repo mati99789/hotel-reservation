@@ -34,7 +34,7 @@ func main() {
 	}
 
 	// DATABASE INIT
-	mongoDBInit := db.NewMongoUserStore(client)
+	mongoDBInit := db.NewMongoUserStore(client, dbname)
 
 	// Handlers initialization
 	userHandler := api.NewUserHandler(mongoDBInit)
