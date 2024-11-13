@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,6 +16,8 @@ type UserStore interface {
 	GetUserById(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
+	DeleteUserById(context.Context, string) (*types.User, error)
+	UpdateUserById(ctx context.Context, filter bson.M, update bson.M) error
 }
 
 type MongoUserStore struct {
@@ -28,6 +31,38 @@ func NewMongoUserStore(db *mongo.Client) *MongoUserStore {
 		db:   db,
 		coll: coll,
 	}
+}
+
+func (h *MongoUserStore) UpdateUserById(ctx context.Context, filter bson.M, update bson.M) error {
+	updateDoc := bson.M{
+		"$set": update,
+	}
+
+	_, err := h.coll.UpdateOne(ctx, filter, updateDoc)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (h *MongoUserStore) DeleteUserById(ctx context.Context, userId string) (*types.User, error) {
+	oid, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := h.coll.DeleteOne(ctx, bson.M{"_id": oid})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if res.DeletedCount == 0 {
+		return nil, errors.New("user not found")
+	}
+
+	return nil, nil
 }
 
 func (h *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*types.User, error) {
