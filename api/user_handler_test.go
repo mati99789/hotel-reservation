@@ -5,15 +5,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotelReservetion/db"
 	"hotelReservetion/types"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
@@ -70,6 +71,14 @@ func TestPostUser(t *testing.T) {
 
 	var user types.User
 	json.NewDecoder(resp.Body).Decode(&user)
+
+	if len(user.ID) == 0 {
+		t.Errorf("Expecting a user id to be set")
+	}
+
+	if len(user.EncryptedPassword) > 0 {
+		t.Errorf("Expecting the ecryptedpassword not to be included in the json response.")
+	}
 
 	if user.FirstName != params.FirstName {
 		t.Errorf("First name should be %s", params.FirstName)
