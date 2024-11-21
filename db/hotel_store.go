@@ -18,8 +18,8 @@ type MongoHotelStore struct {
 	collection *mongo.Collection
 }
 
-func NewMongoHotelStore(client *mongo.Client, dbName string) *MongoHotelStore {
-	return &MongoHotelStore{client: client, collection: client.Database(dbName).Collection("hotels")}
+func NewMongoHotelStore(client *mongo.Client) *MongoHotelStore {
+	return &MongoHotelStore{client: client, collection: client.Database(DBNAME).Collection("hotels")}
 }
 
 func (s *MongoHotelStore) InsertHotel(ctx context.Context, hotel *types.Hotel) (*types.Hotel, error) {
