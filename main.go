@@ -27,21 +27,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// DATABASE INIT
 	var (
-		mongoDBInit = db.NewMongoUserStore(client, db.DBNAME)
-	)
-
-	// Store
-	var (
+		userStore  = db.NewMongoUserStore(client)
 		hotelStore = db.NewMongoHotelStore(client)
 		roomStore  = db.NewMongoRoomStore(client, hotelStore)
 	)
 
+	var (
+		store = db.Store{
+			User:  userStore,
+			Room:  roomStore,
+			Hotel: hotelStore,
+		}
+	)
+
 	// Handlers initialization
 	var (
-		userHandler  = api.NewUserHandler(mongoDBInit)
-		hotelHandler = api.NewHotelHandler(hotelStore, roomStore)
+		userHandler  = api.NewUserHandler(userStore)
+		hotelHandler = api.NewHotelHandler(&store)
 	)
 
 	app := fiber.New(config)
@@ -56,5 +59,7 @@ func main() {
 
 	//hotel handlers
 	apiv1.Get("/hotels", hotelHandler.HandleGetHotels)
+	apiv1.Get("/hotel/:id", hotelHandler.HandleGetHotelByID)
+	apiv1.Get("/hotel/:id/rooms", hotelHandler.HandleGetRooms)
 	log.Fatal(app.Listen(*listenAddr))
 }

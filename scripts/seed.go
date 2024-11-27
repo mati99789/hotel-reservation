@@ -28,16 +28,16 @@ func seedHotel(name, location string, rating int) error {
 
 	rooms := []types.Room{
 		{
-			Type:      types.SingleRoomType,
-			BasePrice: 99,
+			Size:  types.Small,
+			Price: 99,
 		},
 		{
-			Type:      types.DeluxeRoomType,
-			BasePrice: 399,
+			Size:  types.Normal,
+			Price: 199,
 		},
 		{
-			Type:      types.SeaSideRoomType,
-			BasePrice: 299,
+			Size:  types.KingSize,
+			Price: 299,
 		},
 	}
 
