@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"hotelReservetion/db"
+	"hotelReservetion/types"
 )
 
 type HotelHandler struct {
@@ -40,7 +41,7 @@ func (s *HotelHandler) HandleGetRooms(c *fiber.Ctx) error {
 
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 	filter := bson.M{"hotelId": oid}
 	rooms, err := s.store.Room.GetRooms(c.Context(), filter)
@@ -58,4 +59,26 @@ func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(hotels)
+}
+
+func (h *HotelHandler) HandleHotelUpdate(c *fiber.Ctx) error {
+	hotelID := c.Params("id")
+
+	if hotelID == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Hotel id is required"})
+	}
+
+	var hotel types.Hotel
+
+	if err := c.BodyParser(&hotel); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	updatedHotel, err := h.store.Hotel.UpdateHotel(c.Context(), &hotel, hotelID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(updatedHotel)
+
 }

@@ -1,0 +1,19 @@
+POST http://localhost:8080/api/v1/hotel/6746e85e55ee8ee644830b5e
+Content-Type: application/json
+
+{
+  "id": "6746e85e55ee8ee644830b5e",
+  "name": "Bellucia Hotel",
+  "location": "France",
+  "rooms": [
+    "6746e85e55ee8ee644830b5f",
+    "6746e85e55ee8ee644830b60",
+    "6746e85e55ee8ee644830b61"
+  ],
+  "rating": 3
+}
+
+###
+### GET request to example server
+GET http://localhost:8080/api/v1/hotels
+###

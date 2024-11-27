@@ -60,6 +60,7 @@ func main() {
 	//hotel handlers
 	apiv1.Get("/hotels", hotelHandler.HandleGetHotels)
 	apiv1.Get("/hotel/:id", hotelHandler.HandleGetHotelByID)
+	apiv1.Post("/hotel/:id", hotelHandler.HandleHotelUpdate)
 	apiv1.Get("/hotel/:id/rooms", hotelHandler.HandleGetRooms)
 	log.Fatal(app.Listen(*listenAddr))
 }
