@@ -1,3 +1,25 @@
+POST http://localhost:8080/api/v1/user
+Content-Type: application/json
+X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+{
+  "email" : "jon@foo.com",
+  "password": "foobarbaz",
+  "firstName": "James",
+  "lastName": "Bar"
+}
+
+###
+POST http://localhost:8080/api/auth
+Content-Type: application/json
+X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+{
+  "email" : "james@bar.com",
+  "password": "supersecurepassword"
+}
+
+###
 POST http://localhost:8080/api/v1/hotel/6746e85e55ee8ee644830b5e
 Content-Type: application/json
 
@@ -16,4 +38,6 @@ Content-Type: application/json
 ###
 ### GET request to example server
 GET http://localhost:8080/api/v1/hotels
+X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
 ###
+
