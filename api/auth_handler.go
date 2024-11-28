@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+const (
+	INVALIDCREDENTIALS = "Invalid Credentials"
+)
+
 type AuthHandler struct {
 	userStore db.UserStore
 }
@@ -24,6 +28,18 @@ type AuthParams struct {
 type AuthResponse struct {
 	User  *types.User `json:"user"`
 	Token string      `json:"token"`
+}
+
+type genericResp struct {
+	Type string `json:"type"`
+	Msg  string `json:"msg"`
+}
+
+func invalidCredentials(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusUnauthorized).JSON(genericResp{
+		Type: "error",
+		Msg:  INVALIDCREDENTIALS,
+	})
 }
 
 func NewAuthHandler(userStore db.UserStore) *AuthHandler {
@@ -42,13 +58,13 @@ func (h *AuthHandler) HandleAuthenticate(c *fiber.Ctx) error {
 
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return fmt.Errorf("invalid credantials")
+			return invalidCredentials(c)
 		}
 		return err
 	}
 
 	if !types.IsValidPassword(user.EncryptedPassword, auth.Password) {
-		return fmt.Errorf("invalid credantials")
+		return invalidCredentials(c)
 	}
 
 	token := createTokenFromUser(user)

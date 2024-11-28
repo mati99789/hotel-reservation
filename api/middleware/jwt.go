@@ -17,7 +17,7 @@ func JWTAuthentications(c *fiber.Ctx) error {
 	}
 
 	// Parse and validate the token
-	claims, err := validateToken(tokenHeader)
+	claims, err := ValidateToken(tokenHeader)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": fmt.Sprintf("Invalid token: %v", err),
@@ -29,7 +29,7 @@ func JWTAuthentications(c *fiber.Ctx) error {
 	return c.Next()
 }
 
-func validateToken(Tokenstr string) (jwt.MapClaims, error) {
+func ValidateToken(Tokenstr string) (jwt.MapClaims, error) {
 
 	token, err := jwt.Parse(Tokenstr, func(token *jwt.Token) (interface{}, error) {
 
