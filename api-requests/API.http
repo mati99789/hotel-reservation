@@ -38,6 +38,6 @@ Content-Type: application/json
 ###
 ### GET request to example server
 GET http://localhost:8080/api/v1/hotels
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGJhci5jb20iLCJleHAiOjE3MzI4MTAwMTMsImlkIjoiNjc0NzM5YThjNTRlOGIwNzdjYTU4YjM5In0.R6AkZUVquduJntQgLKNf2AhoGn6wUN_VinOj4_AMvAQ
 ###
 
