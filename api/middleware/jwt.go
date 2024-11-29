@@ -26,6 +26,8 @@ func JWTAuthentications(c *fiber.Ctx) error {
 
 	fmt.Println("Claims: ", claims)
 
+	c.Locals("claims", claims)
+
 	return c.Next()
 }
 

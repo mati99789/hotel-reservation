@@ -44,9 +44,10 @@ func main() {
 
 	// Handlers initialization
 	var (
-		userHandler  = api.NewUserHandler(userStore)
-		hotelHandler = api.NewHotelHandler(&store)
-		authHandler  = api.NewAuthHandler(userStore)
+		userHandler    = api.NewUserHandler(userStore)
+		hotelHandler   = api.NewHotelHandler(&store)
+		authHandler    = api.NewAuthHandler(userStore)
+		bookingHandler = api.NewRoomHandler(&store)
 	)
 
 	app := fiber.New(config)
@@ -70,5 +71,7 @@ func main() {
 	apiv1.Get("/hotel/:id", hotelHandler.HandleGetHotelByID)
 	apiv1.Post("/hotel/:id", hotelHandler.HandleHotelUpdate)
 	apiv1.Get("/hotel/:id/rooms", hotelHandler.HandleGetRooms)
+
+	apiv1.Post("/room/:id", bookingHandler.HandleBookRoom)
 	log.Fatal(app.Listen(*listenAddr))
 }

@@ -1,6 +1,16 @@
+POST http://localhost:8080/api/v1/room/67489660df9fc9c02cb271ed
+X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGJhci5jb20iLCJleHAiOjE3MzI4OTEwMjksImlkIjoiNjc0ODk2NjBkZjlmYzljMDJjYjI3MWY0In0.nVMgtl7O1S-0mRk6cAPLk7ZgCDVh_Lal6BF1iyLOSCE
+Content-Type: application/json
+
+{
+  "numPersons": 2,
+  "From": "2024-12-12T12:00:00Z",
+  "To": "2024-12-14T12:00:00Z"
+}
+
+###
 POST http://localhost:8080/api/v1/user
 Content-Type: application/json
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
 
 {
   "email" : "jon@foo.com",
@@ -12,7 +22,6 @@ X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibm
 ###
 POST http://localhost:8080/api/auth
 Content-Type: application/json
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
 
 {
   "email" : "james@bar.com",
@@ -35,9 +44,12 @@ Content-Type: application/json
   "rating": 3
 }
 
+
 ###
 ### GET request to example server
 GET http://localhost:8080/api/v1/hotels
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGJhci5jb20iLCJleHAiOjE3MzI4MTAwMTMsImlkIjoiNjc0NzM5YThjNTRlOGIwNzdjYTU4YjM5In0.R6AkZUVquduJntQgLKNf2AhoGn6wUN_VinOj4_AMvAQ
+X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGJhci5jb20iLCJleHAiOjE3MzI4OTEwMjksImlkIjoiNjc0ODk2NjBkZjlmYzljMDJjYjI3MWY0In0.nVMgtl7O1S-0mRk6cAPLk7ZgCDVh_Lal6BF1iyLOSCE
 ###
+
+
 
