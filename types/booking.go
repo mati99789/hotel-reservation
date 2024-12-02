@@ -6,10 +6,10 @@ import (
 )
 
 type Booking struct {
-	ID         primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
-	RoomID     primitive.ObjectID `json:"room_id" bson:"room_id,omitempty"`
-	UserID     primitive.ObjectID `json:"user_id" bson:"user_id,omitempty"`
-	NumPersons int                `json:"num_persons" bson:"num_persons,omitempty"`
-	From       time.Time          `json:"from" bson:"from,omitempty"`
-	To         time.Time          `json:"to" bson:"to,omitempty"`
+	ID         primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	RoomID     primitive.ObjectID `bson:"room_id" json:"room_id"`
+	UserID     primitive.ObjectID `bson:"user_id" json:"user_id"`
+	NumPersons int                `bson:"num_persons" json:"num_persons"`
+	From       time.Time          `bson:"from" json:"from"`
+	To         time.Time          `bson:"to" json:"to"`
 }

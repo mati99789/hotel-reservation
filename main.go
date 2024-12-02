@@ -29,16 +29,18 @@ func main() {
 	}
 
 	var (
-		userStore  = db.NewMongoUserStore(client)
-		hotelStore = db.NewMongoHotelStore(client)
-		roomStore  = db.NewMongoRoomStore(client, hotelStore)
+		userStore    = db.NewMongoUserStore(client)
+		hotelStore   = db.NewMongoHotelStore(client)
+		roomStore    = db.NewMongoRoomStore(client, hotelStore)
+		bookingStore = db.NewMongoBookingStore(client)
 	)
 
 	var (
 		store = db.Store{
-			User:  userStore,
-			Room:  roomStore,
-			Hotel: hotelStore,
+			User:    userStore,
+			Room:    roomStore,
+			Hotel:   hotelStore,
+			Booking: bookingStore,
 		}
 	)
 
