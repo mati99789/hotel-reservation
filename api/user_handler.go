@@ -72,6 +72,8 @@ func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
 		return err
 	}
 
+	user.Role = types.GuestRole
+
 	insertedUser, err := h.userStore.InsertUser(c.Context(), user)
 
 	if err != nil {

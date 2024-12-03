@@ -69,6 +69,7 @@ func seedUser(fname, lname, email string) {
 		FirstName: fname,
 		LastName:  lname,
 		Password:  "supersecurepassword",
+		Role:      types.GuestRole,
 	})
 
 	if err != nil {

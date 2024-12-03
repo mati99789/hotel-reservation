@@ -8,10 +8,15 @@ import (
 	"regexp"
 )
 
+type UserRole string
+
 const (
-	minFirstNameLen = 2
-	minLastNameLen  = 2
-	minPasswordLen  = 7
+	minFirstNameLen          = 2
+	minLastNameLen           = 2
+	minPasswordLen           = 7
+	AdminRole       UserRole = "admin"
+	GuestRole       UserRole = "guest"
+	StaffRole       UserRole = "staff"
 )
 
 type CreateUserParams struct {
@@ -19,6 +24,7 @@ type CreateUserParams struct {
 	LastName  string
 	Email     string
 	Password  string
+	Role      UserRole
 }
 
 type User struct {
@@ -27,6 +33,7 @@ type User struct {
 	LastName          string             `bson:"lastName" json:"lastName"`
 	Email             string             `bson:"email" json:"email"`
 	EncryptedPassword string             `bson:"encryptedPassword" json:"-"`
+	Role              UserRole           `bson:"role" json:"role"`
 }
 
 type UpdateUserParams struct {
@@ -91,5 +98,6 @@ func NewUserFromParams(params CreateUserParams) (*User, error) {
 		LastName:          params.LastName,
 		Email:             params.Email,
 		EncryptedPassword: string(encpw),
+		Role:              params.Role,
 	}, nil
 }

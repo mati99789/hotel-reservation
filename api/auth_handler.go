@@ -81,6 +81,7 @@ func createTokenFromUser(user *types.User) string {
 		"email": user.Email,
 		"id":    user.ID,
 		"exp":   validTill.Unix(),
+		"role":  user.Role,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
