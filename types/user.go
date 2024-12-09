@@ -4,7 +4,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
-	"hotelReservetion/utils"
+	"hotelReservetion/api-errors"
 	"regexp"
 )
 
@@ -55,23 +55,23 @@ func (p UpdateUserParams) ToBSON() bson.M {
 	return m
 }
 
-func (params CreateUserParams) Validate() []utils.APIError {
-	var errors []utils.APIError
+func (params CreateUserParams) Validate() []api_errors.APIError {
+	var errors []api_errors.APIError
 
 	if len(params.FirstName) < minFirstNameLen {
-		errors = append(errors, utils.NewErrorResponse("firstName", "FirstName must be at least 2 characters long"))
+		errors = append(errors, api_errors.NewErrorResponse("firstName", "FirstName must be at least 2 characters long"))
 	}
 
 	if len(params.LastName) < minLastNameLen {
-		errors = append(errors, utils.NewErrorResponse("lastName", "LastName must be at least 2 characters long"))
+		errors = append(errors, api_errors.NewErrorResponse("lastName", "LastName must be at least 2 characters long"))
 	}
 
 	if len(params.Password) < minPasswordLen {
-		errors = append(errors, utils.NewErrorResponse("password", "Password must be at least 8 characters long"))
+		errors = append(errors, api_errors.NewErrorResponse("password", "Password must be at least 8 characters long"))
 	}
 
 	if !isEmailValid(params.Email) {
-		errors = append(errors, utils.NewErrorResponse("email", "Invalid email"))
+		errors = append(errors, api_errors.NewErrorResponse("email", "Invalid email"))
 	}
 	return errors
 }

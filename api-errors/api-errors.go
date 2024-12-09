@@ -1,4 +1,4 @@
-package utils
+package api_errors
 
 type APIError struct {
 	Field   string `json:"field"`

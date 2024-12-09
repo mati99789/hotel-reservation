@@ -5,9 +5,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	api_errors "hotelReservetion/api-errors"
 	"hotelReservetion/db"
 	"hotelReservetion/types"
-	"hotelReservetion/utils"
 )
 
 type UserHandler struct {
@@ -62,9 +62,7 @@ func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
 	}
 
 	if errors := params.Validate(); len(errors) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.APIErrors{
-			Errors: errors,
-		})
+		return c.Status(fiber.StatusBadRequest).JSON(api_errors.NewErrorResponse("errors", "Can't validate user"))
 	}
 
 	user, err := types.NewUserFromParams(params)

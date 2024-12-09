@@ -81,11 +81,12 @@ func main() {
 
 	// Rooms handlers
 	apiv1.Get("/rooms", roomHandler.HandleGetRooms)
-	apiv1.Post("/room/:id", roomHandler.HandleBookRoom)
+	apiv1.Post("/room/:id/book", roomHandler.HandleBookRoom)
 
 	// Bookings handlers
 	apiv1.Get("/booking", bookingHandler.HandleGetBookings)
 	apiv1.Get("/booking/:id", bookingHandler.HandleGetBooking)
+	apiv1.Get("/booking/:id/cancel", bookingHandler.HandleCancelBooking)
 
 	log.Fatal(app.Listen(*listenAddr))
 }
