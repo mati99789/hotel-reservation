@@ -2,11 +2,10 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	"hotelReservetion/api/middleware"
-	"hotelReservetion/db"
+	"hotelReservetion/db/fixtures"
 	"hotelReservetion/types"
 	"net/http"
 	"net/http/httptest"
@@ -14,15 +13,15 @@ import (
 )
 
 func TestAuthenticationWrongPassword(t *testing.T) {
-	tdb := setup(t)
+	tdb := setup()
 
 	defer tdb.tearddown(t)
 
-	insertTestUser(t, tdb)
+	fixtures.AddUser(tdb.Store, "test@test.com", "James", "Bond", types.GuestRole)
 
 	app := fiber.New()
 
-	authHandler := NewAuthHandler(tdb.UserStore)
+	authHandler := NewAuthHandler(tdb.User)
 
 	app.Post("/auth", authHandler.HandleAuthenticate)
 
@@ -61,15 +60,15 @@ func TestAuthenticationWrongPassword(t *testing.T) {
 }
 
 func TestAuthenticationSuccessPassword(t *testing.T) {
-	tdb := setup(t)
+	tdb := setup()
 
 	defer tdb.tearddown(t)
 
-	insertedUser := insertTestUser(t, tdb)
+	insertedUser := fixtures.AddUser(tdb.Store, "test@test.com", "James", "Bond", types.GuestRole)
 
 	app := fiber.New()
 
-	authHandler := NewAuthHandler(tdb.UserStore)
+	authHandler := NewAuthHandler(tdb.User)
 
 	app.Post("/auth", authHandler.HandleAuthenticate)
 
@@ -120,24 +119,4 @@ func TestAuthenticationSuccessPassword(t *testing.T) {
 	if claims["email"] != insertedUser.Email {
 		t.Errorf("got email %s, want %s", claims["email"], insertedUser.Email)
 	}
-}
-
-func insertTestUser(t *testing.T, userStore db.UserStore) *types.User {
-	user, err := types.NewUserFromParams(types.CreateUserParams{
-		FirstName: "James",
-		LastName:  "Bond",
-		Email:     "test@test.com",
-		Password:  "password",
-	})
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_, err = userStore.InsertUser(context.Background(), user)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return user
 }

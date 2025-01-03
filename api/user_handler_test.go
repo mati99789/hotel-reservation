@@ -13,12 +13,12 @@ import (
 
 func TestPostUser(t *testing.T) {
 
-	db := setup(t)
+	db := setup()
 
 	defer db.tearddown(t)
 
 	app := fiber.New()
-	userHandler := NewUserHandler(db.UserStore)
+	userHandler := NewUserHandler(db.User)
 
 	app.Post("/", userHandler.HandlePostUser)
 
