@@ -34,7 +34,7 @@ func setup() *Testdb {
 }
 
 func (d *Testdb) tearddown(t *testing.T) {
-	if err := d.client.Database(db.TESTDBName).Drop(context.Background()); err != nil {
+	if err := d.client.Database(db.DBNAME).Drop(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 }
