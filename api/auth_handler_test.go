@@ -74,7 +74,7 @@ func TestAuthenticationSuccessPassword(t *testing.T) {
 
 	authParams := AuthParams{
 		Email:    "test@test.com",
-		Password: "password",
+		Password: "James_Bond",
 	}
 
 	b, _ := json.Marshal(authParams)

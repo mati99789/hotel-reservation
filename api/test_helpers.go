@@ -28,16 +28,16 @@ func setup() *Testdb {
 	return &Testdb{
 		client: client,
 		Store: &db.Store{
-			User:    db.NewMongoUserStore(client),
-			Booking: db.NewMongoBookingStore(client),
-			Room:    db.NewMongoRoomStore(client, hotelStore),
+			User:    db.NewMongoUserStoreWithDB(client),
+			Booking: db.NewMongoBookingStoreWithDB(client),
+			Room:    db.NewMongoRoomStoreWithDB(client, hotelStore),
 			Hotel:   hotelStore,
 		},
 	}
 }
 
 func (d *Testdb) tearddown(t *testing.T) {
-	if err := d.client.Database(db.DBNAME).Drop(context.Background()); err != nil {
+	if err := d.client.Database(db.TESTDBName).Drop(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 }
