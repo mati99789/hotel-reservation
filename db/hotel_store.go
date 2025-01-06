@@ -19,16 +19,16 @@ type HotelStore interface {
 }
 
 type MongoHotelStore struct {
-	client     *mongo.Client
-	collection *mongo.Collection
+	Client     *mongo.Client
+	Collection *mongo.Collection
 }
 
 func NewMongoHotelStore(client *mongo.Client) *MongoHotelStore {
-	return &MongoHotelStore{client: client, collection: client.Database(DBNAME).Collection("hotels")}
+	return &MongoHotelStore{Client: client, Collection: client.Database(DBNAME).Collection("hotels")}
 }
 
 func (s *MongoHotelStore) GetHotels(ctx context.Context, filter bson.M) ([]*types.Hotel, error) {
-	resp, err := s.collection.Find(ctx, filter)
+	resp, err := s.Collection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (s *MongoHotelStore) GetHotels(ctx context.Context, filter bson.M) ([]*type
 }
 
 func (s *MongoHotelStore) Insert(ctx context.Context, hotel *types.Hotel) (*types.Hotel, error) {
-	response, err := s.collection.InsertOne(ctx, hotel)
+	response, err := s.Collection.InsertOne(ctx, hotel)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (s *MongoHotelStore) Insert(ctx context.Context, hotel *types.Hotel) (*type
 }
 
 func (s *MongoHotelStore) Update(ctx context.Context, filter bson.M, update bson.M) error {
-	_, err := s.collection.UpdateOne(ctx, filter, update)
+	_, err := s.Collection.UpdateOne(ctx, filter, update)
 	return err
 }
 
@@ -63,7 +63,7 @@ func (s *MongoHotelStore) GetHotelByID(ctx context.Context, hotelID string) (*ty
 		return nil, err
 	}
 
-	if err := s.collection.FindOne(ctx, bson.M{"_id": hotelObjectID}).Decode(&hotel); err != nil {
+	if err := s.Collection.FindOne(ctx, bson.M{"_id": hotelObjectID}).Decode(&hotel); err != nil {
 		return nil, err
 	}
 
@@ -83,7 +83,7 @@ func (s *MongoHotelStore) UpdateHotel(ctx context.Context, hotel *types.Hotel, h
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
 	var updatedHotel types.Hotel
-	err = s.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&updatedHotel)
+	err = s.Collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&updatedHotel)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("hotel not found")

@@ -118,7 +118,7 @@ func (h *MongoUserStore) GetUserById(ctx context.Context, id string) (*types.Use
 }
 
 func (h *MongoUserStore) Drop(ctx context.Context) error {
-	fmt.Println("----Dropping user collection------")
+	fmt.Println("----Dropping user Collection------")
 	err := h.coll.Drop(ctx)
 	if err != nil {
 		return err

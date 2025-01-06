@@ -20,7 +20,10 @@ func setup() *Testdb {
 		log.Fatal(err)
 	}
 
-	hotelStore := db.NewMongoHotelStore(client)
+	hotelStore := &db.MongoHotelStore{
+		Client:     client,
+		Collection: client.Database(db.TESTDBName).Collection("hotels"),
+	}
 
 	return &Testdb{
 		client: client,
