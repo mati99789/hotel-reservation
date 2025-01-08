@@ -1,12 +1,12 @@
 package api
 
 import (
+	"hotelReservetion/db"
+	"hotelReservetion/utils"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson"
-	"hotelReservetion/db"
-	"hotelReservetion/utils"
-	"net/http"
 )
 
 type BookingHandler struct {
@@ -31,7 +31,7 @@ func (h *BookingHandler) HandleGetBooking(c *fiber.Ctx) error {
 
 	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return ErrNotFoundResources()
 	}
 
 	claims, ok := c.Locals("claims").(jwt.MapClaims)
@@ -41,11 +41,11 @@ func (h *BookingHandler) HandleGetBooking(c *fiber.Ctx) error {
 
 	user, err := utils.GetUserFromClaims(claims)
 	if err != nil {
-		return err
+		return ErrUnauthorized()
 	}
 
 	if user.ID != booking.UserID {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "unauthorized"})
+		return ErrUnauthorized()
 	}
 	return c.JSON(booking)
 }
@@ -56,7 +56,7 @@ func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
 	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
 
 	if err != nil {
-		return err
+		return ErrNotFoundResources()
 	}
 	claims, ok := c.Locals("claims").(jwt.MapClaims)
 	if !ok {
@@ -70,10 +70,7 @@ func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
 	}
 
 	if booking.UserID != user.ID {
-		return c.Status(http.StatusUnauthorized).JSON(genericResp{
-			Type: "error",
-			Msg:  "not authorized",
-		})
+		return ErrUnauthorized()
 	}
 
 	err = h.store.Booking.UpdateBooking(c.Context(), c.Params("id"), bson.M{"canceled": true})

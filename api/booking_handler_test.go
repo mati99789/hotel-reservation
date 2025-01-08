@@ -2,8 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/gofiber/fiber/v2"
-	"hotelReservetion/api/middleware"
 	"hotelReservetion/db/fixtures"
 	"hotelReservetion/types"
 	"io"
@@ -12,6 +10,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func TestAdminGetBookings(t *testing.T) {
@@ -26,8 +26,8 @@ func TestAdminGetBookings(t *testing.T) {
 		booking = fixtures.AddBooking(db.Store, room.ID, admin.ID, 2, time.Now(), time.Now().AddDate(0, 0, 2))
 
 		app        = fiber.New()
-		apiv1      = app.Group("/api/v1", middleware.JWTAuthentications)
-		adminGroup = apiv1.Group("/admin", middleware.AuthorizeRole(types.AdminRole))
+		apiv1      = app.Group("/api/v1", JWTAuthentications)
+		adminGroup = apiv1.Group("/admin", AuthorizeRole(types.AdminRole))
 	)
 
 	bookingHandler := NewBookingHandler(db.Store)
@@ -71,7 +71,7 @@ func TestAdminGetBookings(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if res.StatusCode == http.StatusOK {
-		t.Fatalf("Expected status code non %d, got %d. Response body: %s", http.StatusOK, response.StatusCode, res.Body)
+	if res.StatusCode == http.StatusUnauthorized {
+		t.Fatalf("Expected status unauthorize but got %d", res.StatusCode)
 	}
 }

@@ -3,13 +3,13 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gofiber/fiber/v2"
-	"hotelReservetion/api/middleware"
 	"hotelReservetion/db/fixtures"
 	"hotelReservetion/types"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func TestAuthenticationWrongPassword(t *testing.T) {
@@ -110,7 +110,7 @@ func TestAuthenticationSuccessPassword(t *testing.T) {
 		t.Errorf("got last name %s, want %s", authResp.User.LastName, insertedUser.LastName)
 	}
 
-	claims, err := middleware.ValidateToken(authResp.Token)
+	claims, err := ValidateToken(authResp.Token)
 
 	if err != nil {
 		t.Errorf("error validating token: %v", err)

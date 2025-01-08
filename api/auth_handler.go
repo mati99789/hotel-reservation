@@ -3,13 +3,14 @@ package api
 import (
 	"errors"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
-	"go.mongodb.org/mongo-driver/mongo"
 	"hotelReservetion/db"
 	"hotelReservetion/types"
 	"os"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const (
@@ -86,6 +87,11 @@ func CreateTokenFromUser(user *types.User) string {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	secret := os.Getenv("JWT_SECRET")
+
+	if secret == "" {
+		fmt.Println("Secret token not provided.")
+	}
+
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
 		fmt.Println("Error signing token")

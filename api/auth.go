@@ -1,9 +1,10 @@
-package middleware
+package api
 
 import (
+	"hotelReservetion/types"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"hotelReservetion/types"
 )
 
 type AuthorizationError struct {

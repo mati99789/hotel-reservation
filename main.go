@@ -3,20 +3,18 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotelReservetion/api"
-	"hotelReservetion/api/middleware"
 	"hotelReservetion/db"
 	"hotelReservetion/types"
 	"log"
+
+	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var config = fiber.Config{
-	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-		return ctx.JSON(map[string]string{"error": err.Error()})
-	},
+	ErrorHandler: api.ErrorHandler,
 }
 
 func main() {
@@ -62,10 +60,10 @@ func main() {
 	auth.Post("/register", userHandler.HandlePostUser)
 
 	// Protected routes require authentication
-	apiv1 := app.Group("/api/v1", middleware.JWTAuthentications)
+	apiv1 := app.Group("/api/v1", api.JWTAuthentications)
 
 	// Admin routes
-	admin := apiv1.Group("/admin", middleware.AuthorizeRole(types.AdminRole))
+	admin := apiv1.Group("/admin", api.AuthorizeRole(types.AdminRole))
 	admin.Get("/users", userHandler.HandleGetUsers)
 
 	// user handler

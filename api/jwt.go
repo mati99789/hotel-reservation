@@ -1,11 +1,12 @@
-package middleware
+package api
 
 import (
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 	"os"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func JWTAuthentications(c *fiber.Ctx) error {
@@ -37,7 +38,7 @@ func ValidateToken(Tokenstr string) (jwt.MapClaims, error) {
 
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			fmt.Println("Invalid signing method", token.Header["alg"])
-			return nil, fmt.Errorf("unauthoried")
+			return nil, ErrUnauthorized()
 		}
 
 		secret := os.Getenv("JWT_SECRET")
@@ -46,7 +47,7 @@ func ValidateToken(Tokenstr string) (jwt.MapClaims, error) {
 
 	if err != nil {
 		fmt.Println("Failed to parse token", err)
-		return nil, fmt.Errorf("unauthoried")
+		return nil, ErrUnauthorized()
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
