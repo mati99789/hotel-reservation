@@ -7,13 +7,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"hotelReservetion/shared"
 	"hotelReservetion/types"
 )
 
 type HotelStore interface {
 	Insert(ctx context.Context, hotel *types.Hotel) (*types.Hotel, error)
-	Update(context.Context, bson.M, bson.M) error
-	GetHotels(context.Context, bson.M) ([]*types.Hotel, error)
+	Update(context.Context, shared.Map, shared.Map) error
+	GetHotels(context.Context, shared.Map) ([]*types.Hotel, error)
 	GetHotelByID(context.Context, string) (*types.Hotel, error)
 	UpdateHotel(context.Context, *types.Hotel, string) (*types.Hotel, error)
 }
@@ -27,7 +28,7 @@ func NewMongoHotelStore(client *mongo.Client) *MongoHotelStore {
 	return &MongoHotelStore{Client: client, Collection: client.Database(DBNAME).Collection("hotels")}
 }
 
-func (s *MongoHotelStore) GetHotels(ctx context.Context, filter bson.M) ([]*types.Hotel, error) {
+func (s *MongoHotelStore) GetHotels(ctx context.Context, filter shared.Map) ([]*types.Hotel, error) {
 	resp, err := s.Collection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
@@ -50,7 +51,7 @@ func (s *MongoHotelStore) Insert(ctx context.Context, hotel *types.Hotel) (*type
 	return hotel, nil
 }
 
-func (s *MongoHotelStore) Update(ctx context.Context, filter bson.M, update bson.M) error {
+func (s *MongoHotelStore) Update(ctx context.Context, filter shared.Map, update shared.Map) error {
 	_, err := s.Collection.UpdateOne(ctx, filter, update)
 	return err
 }
@@ -63,7 +64,7 @@ func (s *MongoHotelStore) GetHotelByID(ctx context.Context, hotelID string) (*ty
 		return nil, err
 	}
 
-	if err := s.Collection.FindOne(ctx, bson.M{"_id": hotelObjectID}).Decode(&hotel); err != nil {
+	if err := s.Collection.FindOne(ctx, shared.Map{"_id": hotelObjectID}).Decode(&hotel); err != nil {
 		return nil, err
 	}
 

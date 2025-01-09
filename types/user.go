@@ -1,10 +1,10 @@
 package types
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"hotelReservetion/api-errors"
+	"hotelReservetion/shared"
 	"regexp"
 )
 
@@ -39,10 +39,12 @@ type User struct {
 type UpdateUserParams struct {
 	FirstName string
 	LastName  string
+	Email     string
+	Role      UserRole
 }
 
-func (p UpdateUserParams) ToBSON() bson.M {
-	m := bson.M{}
+func (p UpdateUserParams) ToMap() shared.Map {
+	m := shared.Map{}
 
 	if len(p.FirstName) > 0 {
 		m["firstName"] = p.FirstName
@@ -50,6 +52,14 @@ func (p UpdateUserParams) ToBSON() bson.M {
 
 	if len(p.LastName) > 0 {
 		m["lastName"] = p.LastName
+	}
+
+	if len(p.Email) > 0 {
+		m["email"] = p.Email
+	}
+
+	if len(p.Role) > 0 {
+		m["role"] = p.Role
 	}
 
 	return m

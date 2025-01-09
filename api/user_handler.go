@@ -3,10 +3,10 @@ package api
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	api_errors "hotelReservetion/api-errors"
 	"hotelReservetion/db"
+	"hotelReservetion/shared"
 	"hotelReservetion/types"
 )
 
@@ -22,25 +22,34 @@ func NewUserHandler(userStore db.UserStore) *UserHandler {
 
 func (h *UserHandler) HandlePutUser(c *fiber.Ctx) error {
 	var (
-		//update bson.M
 		params types.UpdateUserParams
 		userID = c.Params("id")
 	)
+
+	if err := c.BodyParser(&params); err != nil {
+		return err
+	}
 
 	oid, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return err
 	}
 
-	if err := c.BodyParser(&params); err != nil {
-		return err
+	filter := shared.Map{"_id": oid}
+	if err := h.userStore.UpdateUserById(c.Context(), filter, params); err != nil {
+		if err.Error() == "user not found" {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": "User not found",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
 	}
 
-	filter := bson.M{"_id": oid}
-	if err := h.userStore.UpdateUserById(c.Context(), filter, params); err != nil {
-		return err
-	}
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"Message": "User updated!"})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "User update request processed successfully",
+	})
 }
 
 func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {

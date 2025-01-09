@@ -2,15 +2,10 @@ package api
 
 import (
 	"errors"
-	"fmt"
+	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo"
 	"hotelReservetion/db"
 	"hotelReservetion/types"
-	"os"
-	"time"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const (
@@ -27,8 +22,7 @@ type AuthParams struct {
 }
 
 type AuthResponse struct {
-	User  *types.User `json:"user"`
-	Token string      `json:"token"`
+	User *types.User `json:"user"`
 }
 
 type genericResp struct {
@@ -68,35 +62,102 @@ func (h *AuthHandler) HandleAuthenticate(c *fiber.Ctx) error {
 		return invalidCredentials(c)
 	}
 
-	token := CreateTokenFromUser(user)
+	tokens, err := types.CreateTokenPair(user)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to generate token",
+		})
+	}
+
+	accessCookie := fiber.Cookie{
+		Name:     "access_token",
+		Value:    tokens.AccessToken,
+		Path:     "/",
+		MaxAge:   4 * 60 * 60,
+		Secure:   true,
+		HTTPOnly: true,
+		SameSite: "Strict",
+	}
+
+	c.Cookie(&accessCookie)
+
+	refreshCookie := fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    tokens.RefreshToken,
+		Path:     "/refresh",
+		MaxAge:   7 * 24 * 60 * 60,
+		Secure:   true,
+		HTTPOnly: true,
+		SameSite: "Strict",
+	}
+
+	c.Cookie(&refreshCookie)
+
 	return c.JSON(&AuthResponse{
-		User:  user,
-		Token: token,
+		User: user,
 	})
 }
 
-func CreateTokenFromUser(user *types.User) string {
-	now := time.Now()
-	validTill := now.Add(time.Hour * 4)
-	claims := jwt.MapClaims{
-		"email": user.Email,
-		"id":    user.ID,
-		"exp":   validTill.Unix(),
-		"role":  user.Role,
+func (h *AuthHandler) HandleRefresh(c *fiber.Ctx) error {
+	refreshToken := c.Params("refresh_token")
+	if refreshToken == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "No refresh token provided",
+		})
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	secret := os.Getenv("JWT_SECRET")
-
-	if secret == "" {
-		fmt.Println("Secret token not provided.")
-	}
-
-	tokenString, err := token.SignedString([]byte(secret))
+	claims, err := ValidateToken(refreshToken, types.RefreshToken)
 	if err != nil {
-		fmt.Println("Error signing token")
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid refresh token",
+		})
 	}
 
-	return tokenString
+	userIDStr, ok := claims["user_id"].(string)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid refresh token",
+		})
+	}
 
+	user, err := h.userStore.GetUserByEmail(c.Context(), userIDStr)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "User not found",
+		})
+	}
+	tokens, err := types.CreateTokenPair(user)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to generate tokens",
+		})
+	}
+
+	// Set new access token cookie
+	accessCookie := fiber.Cookie{
+		Name:     "access_token",
+		Value:    tokens.AccessToken,
+		Path:     "/",
+		MaxAge:   4 * 60 * 60,
+		Secure:   true,
+		HTTPOnly: true,
+		SameSite: "Strict",
+	}
+	c.Cookie(&accessCookie)
+
+	// Set new refresh token cookie
+	refreshCookie := fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    tokens.RefreshToken,
+		Path:     "/refresh",
+		MaxAge:   7 * 24 * 60 * 60,
+		Secure:   true,
+		HTTPOnly: true,
+		SameSite: "Strict",
+	}
+	c.Cookie(&refreshCookie)
+
+	return c.JSON(&AuthResponse{
+		User: user,
+	})
 }

@@ -5,12 +5,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"hotelReservetion/shared"
 	"hotelReservetion/types"
 )
 
 type RoomStore interface {
 	InsertRoom(ctx context.Context, room *types.Room) (*types.Room, error)
-	GetRooms(ctx context.Context, m bson.M) ([]*types.Room, error)
+	GetRooms(ctx context.Context, m shared.Map) ([]*types.Room, error)
 }
 
 type MongoRoomStore struct {
@@ -28,7 +29,7 @@ func NewMongoRoomStore(client *mongo.Client, hotelStore HotelStore) *MongoRoomSt
 	}
 }
 
-func (s *MongoRoomStore) GetRooms(ctx context.Context, filter bson.M) ([]*types.Room, error) {
+func (s *MongoRoomStore) GetRooms(ctx context.Context, filter shared.Map) ([]*types.Room, error) {
 	response, error := s.collection.Find(ctx, filter)
 	if error != nil {
 		return nil, error
@@ -50,8 +51,8 @@ func (s *MongoRoomStore) InsertRoom(ctx context.Context, room *types.Room) (*typ
 	}
 	room.ID = response.InsertedID.(primitive.ObjectID)
 
-	filter := bson.M{"_id": room.HotelId}
-	update := bson.M{"$push": bson.M{"rooms": room.ID}}
+	filter := shared.Map{"_id": room.HotelId}
+	update := shared.Map{"$push": bson.M{"rooms": room.ID}}
 
 	if err := s.HotelStore.Update(ctx, filter, update); err != nil {
 		return nil, err

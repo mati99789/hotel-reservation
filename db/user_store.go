@@ -7,11 +7,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"hotelReservetion/shared"
 	"hotelReservetion/types"
 	"log"
 )
-
-const userColl = "users"
 
 type Dropper interface {
 	Drop(ctx context.Context) error
@@ -24,7 +23,7 @@ type UserStore interface {
 	GetUsers(context.Context) ([]*types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
 	DeleteUserById(context.Context, string) (*types.User, error)
-	UpdateUserById(ctx context.Context, filter bson.M, update types.UpdateUserParams) error
+	UpdateUserById(ctx context.Context, filter shared.Map, update types.UpdateUserParams) error
 	GetUserByEmail(context.Context, string) (*types.User, error)
 }
 
@@ -34,26 +33,35 @@ type MongoUserStore struct {
 }
 
 func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
-	coll := client.Database(DBNAME).Collection(userColl)
+	coll := client.Database(DBNAME).Collection("users")
 	return &MongoUserStore{
 		db:   client,
 		coll: coll,
 	}
 }
 
-func (h *MongoUserStore) UpdateUserById(ctx context.Context, filter bson.M, params types.UpdateUserParams) error {
+func (h *MongoUserStore) UpdateUserById(ctx context.Context, filter shared.Map, params types.UpdateUserParams) error {
+	updateFields := params.ToMap()
+
+	if len(updateFields) == 0 {
+		return errors.New("no fields to update")
+	}
+
 	updateDoc := bson.M{
-		"$set": params.ToBSON(),
+		"$set": updateFields,
 	}
 
-	_, err := h.coll.UpdateOne(ctx, filter, updateDoc)
+	result, err := h.coll.UpdateOne(ctx, filter, updateDoc)
 	if err != nil {
-		return err
+		return fmt.Errorf("database error: %w", err)
 	}
 
-	return err
-}
+	if result.MatchedCount == 0 {
+		return errors.New("user not found")
+	}
 
+	return nil
+}
 func (h *MongoUserStore) DeleteUserById(ctx context.Context, userId string) (*types.User, error) {
 	oid, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {

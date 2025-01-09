@@ -2,52 +2,66 @@ package api
 
 import (
 	"fmt"
-	"os"
-	"time"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"hotelReservetion/types"
+	"os"
 )
 
 func JWTAuthentications(c *fiber.Ctx) error {
-	tokenHeader := c.Get("X-API-Token")
-	if tokenHeader == "" {
+	token := c.Cookies("access_token")
+
+	if token == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "No authentication token provided",
 		})
 	}
 
 	// Parse and validate the token
-	claims, err := ValidateToken(tokenHeader)
+	claims, err := ValidateToken(token, types.AccessToken)
 	if err != nil {
+		// If token is expired, check if we have a refresh token
+		if err.Error() == "token expired" {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "Token expired",
+				"code":  "TOKEN_EXPIRED",
+			})
+		}
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": fmt.Sprintf("Invalid token: %v", err),
 		})
 	}
 
-	fmt.Println("Claims: ", claims)
+	if tokenType, ok := claims["type"].(string); !ok || types.TokenType(tokenType) != types.AccessToken {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid token type",
+		})
+	}
 
 	c.Locals("claims", claims)
 
 	return c.Next()
 }
 
-func ValidateToken(Tokenstr string) (jwt.MapClaims, error) {
-
-	token, err := jwt.Parse(Tokenstr, func(token *jwt.Token) (interface{}, error) {
-
+func ValidateToken(tokenStr string, tokenType types.TokenType) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			fmt.Println("Invalid signing method", token.Header["alg"])
-			return nil, ErrUnauthorized()
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		secret := os.Getenv("JWT_SECRET")
+		// Choose secret based on token type
+		var secret string
+		if tokenType == types.AccessToken {
+			secret = os.Getenv("JWT_SECRET")
+		} else {
+			secret = os.Getenv("JWT_REFRESH_SECRET")
+		}
+
 		return []byte(secret), nil
 	})
 
 	if err != nil {
-		fmt.Println("Failed to parse token", err)
-		return nil, ErrUnauthorized()
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
@@ -55,10 +69,9 @@ func ValidateToken(Tokenstr string) (jwt.MapClaims, error) {
 		return nil, fmt.Errorf("invalid claims")
 	}
 
-	if exp, ok := claims["exp"].(float64); ok {
-		if time.Now().Unix() > int64(exp) {
-			return nil, fmt.Errorf("token expired")
-		}
+	// Verify token type
+	if claimType, ok := claims["type"].(string); !ok || types.TokenType(claimType) != tokenType {
+		return nil, fmt.Errorf("invalid token type")
 	}
 
 	return claims, nil

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"hotelReservetion/api"
 	"hotelReservetion/db"
 	"hotelReservetion/db/fixtures"
 	"hotelReservetion/types"
@@ -39,9 +38,20 @@ func main() {
 	}
 
 	user := fixtures.AddUser(&store, "matteus.urbaniak@hotmail.com", "Mateusz", "Urbaniak", types.GuestRole)
-	fmt.Println("User => ", api.CreateTokenFromUser(user))
+	tokens, err := types.CreateTokenPair(user)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("User Access Token => ", tokens.AccessToken)
+	fmt.Println("User Refresh Token => ", tokens.RefreshToken)
+
 	admin := fixtures.AddUser(&store, "admin@o2.pl", "Admin", "Admin", types.AdminRole)
-	fmt.Println("Admin => ", api.CreateTokenFromUser(admin))
+	adminTokens, err := types.CreateTokenPair(admin)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Admin Access Token => ", adminTokens.AccessToken)
+	fmt.Println("Admin Refresh Token => ", adminTokens.RefreshToken)
 
 	hotel := fixtures.AddHotel(&store, "Bellucia", "France", 2, nil)
 	room := fixtures.AddRoom(&store, types.Normal, false, 129, hotel.ID)

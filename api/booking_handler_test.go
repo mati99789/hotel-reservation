@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"hotelReservetion/db/fixtures"
 	"hotelReservetion/types"
+	"hotelReservetion/utils"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -33,10 +34,14 @@ func TestAdminGetBookings(t *testing.T) {
 	bookingHandler := NewBookingHandler(db.Store)
 	adminGroup.Get("/users", bookingHandler.HandleGetBookings)
 
-	token := CreateTokenFromUser(admin)
+	token := utils.CreateTestToken(admin)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/admin/users", nil)
-	req.Header.Set("X-API-Token", token)
+
+	req.AddCookie(&http.Cookie{
+		Name:  "access_token",
+		Value: token,
+	})
 	req.Header.Set("Content-Type", "application/json")
 
 	response, err := app.Test(req)
@@ -64,7 +69,10 @@ func TestAdminGetBookings(t *testing.T) {
 
 	// Test non-admin cannot access the bookings
 	req = httptest.NewRequest(http.MethodGet, "/api/v1/admin/bookings", nil)
-	req.Header.Set("X-API-Token", CreateTokenFromUser(user))
+	req.AddCookie(&http.Cookie{
+		Name:  "access_token",
+		Value: utils.CreateTestToken(user),
+	})
 
 	res, err := app.Test(req)
 	if err != nil {

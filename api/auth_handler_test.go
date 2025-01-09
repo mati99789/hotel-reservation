@@ -13,16 +13,13 @@ import (
 )
 
 func TestAuthenticationWrongPassword(t *testing.T) {
+	// This test stays mostly the same since we're testing failure case
 	tdb := setup()
-
 	defer tdb.tearddown(t)
 
 	fixtures.AddUser(tdb.Store, "test@test.com", "James", "Bond", types.GuestRole)
-
 	app := fiber.New()
-
 	authHandler := NewAuthHandler(tdb.User)
-
 	app.Post("/auth", authHandler.HandleAuthenticate)
 
 	authParams := AuthParams{
@@ -31,7 +28,6 @@ func TestAuthenticationWrongPassword(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(authParams)
-
 	request := httptest.NewRequest(http.MethodPost, "/auth", bytes.NewReader(b))
 	request.Header.Set("Content-Type", "application/json")
 
@@ -45,7 +41,6 @@ func TestAuthenticationWrongPassword(t *testing.T) {
 	}
 
 	var genericResp genericResp
-
 	if err := json.NewDecoder(resp.Body).Decode(&genericResp); err != nil {
 		t.Error(err)
 	}
@@ -61,15 +56,11 @@ func TestAuthenticationWrongPassword(t *testing.T) {
 
 func TestAuthenticationSuccessPassword(t *testing.T) {
 	tdb := setup()
-
 	defer tdb.tearddown(t)
 
 	insertedUser := fixtures.AddUser(tdb.Store, "test@test.com", "James", "Bond", types.GuestRole)
-
 	app := fiber.New()
-
 	authHandler := NewAuthHandler(tdb.User)
-
 	app.Post("/auth", authHandler.HandleAuthenticate)
 
 	authParams := AuthParams{
@@ -78,7 +69,6 @@ func TestAuthenticationSuccessPassword(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(authParams)
-
 	request := httptest.NewRequest(http.MethodPost, "/auth", bytes.NewReader(b))
 	request.Header.Set("Content-Type", "application/json")
 
@@ -87,16 +77,39 @@ func TestAuthenticationSuccessPassword(t *testing.T) {
 		t.Error(err)
 	}
 
-	// Parse the response
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("expected status OK but got %v", resp.StatusCode)
+	}
+
+	// Get cookies from response
+	cookies := resp.Cookies()
+	var accessToken string
+	var refreshToken string
+
+	for _, cookie := range cookies {
+		switch cookie.Name {
+		case "access_token":
+			accessToken = cookie.Value
+		case "refresh_token":
+			refreshToken = cookie.Value
+		}
+	}
+
+	if accessToken == "" {
+		t.Error("expected access_token cookie to be present")
+	}
+
+	if refreshToken == "" {
+		t.Error("expected refresh_token cookie to be present")
+	}
+
+	// Parse the response for user data
 	var authResp AuthResponse
 	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
 		t.Fatal(err)
 	}
 
-	if authResp.Token == "" {
-		t.Error("expected JWT token to be present")
-	}
-
+	// Verify user data
 	if authResp.User == nil {
 		t.Fatal("expected user to be present")
 	}
@@ -110,13 +123,23 @@ func TestAuthenticationSuccessPassword(t *testing.T) {
 		t.Errorf("got last name %s, want %s", authResp.User.LastName, insertedUser.LastName)
 	}
 
-	claims, err := ValidateToken(authResp.Token)
-
+	// Validate the access token
+	claims, err := ValidateToken(accessToken, types.AccessToken)
 	if err != nil {
 		t.Errorf("error validating token: %v", err)
 	}
 
-	if claims["email"] != insertedUser.Email {
-		t.Errorf("got email %s, want %s", claims["email"], insertedUser.Email)
+	if claims["user_id"] != insertedUser.ID.Hex() {
+		t.Errorf("got user_id %v, want %v", claims["user_id"], insertedUser.ID)
+	}
+
+	// Optionally validate refresh token
+	refreshClaims, err := ValidateToken(refreshToken, types.RefreshToken)
+	if err != nil {
+		t.Errorf("error validating refresh token: %v", err)
+	}
+
+	if refreshClaims["type"] != string(types.RefreshToken) {
+		t.Errorf("expected refresh token type but got %v", refreshClaims["type"])
 	}
 }

@@ -2,9 +2,9 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"hotelReservetion/db"
+	"hotelReservetion/shared"
 	"hotelReservetion/types"
 )
 
@@ -43,7 +43,7 @@ func (s *HotelHandler) HandleGetRooms(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	filter := bson.M{"hotelId": oid}
+	filter := shared.Map{"hotelId": oid}
 	rooms, err := s.store.Room.GetRooms(c.Context(), filter)
 	if err != nil {
 		return err

@@ -58,6 +58,7 @@ func main() {
 	// Public routes (no authentication needed)
 	auth.Post("/auth", authHandler.HandleAuthenticate)
 	auth.Post("/register", userHandler.HandlePostUser)
+	auth.Post("/refresh", authHandler.HandleRefresh)
 
 	// Protected routes require authentication
 	apiv1 := app.Group("/api/v1", api.JWTAuthentications)
