@@ -9,6 +9,8 @@ import (
 	"hotelReservetion/db/fixtures"
 	"hotelReservetion/types"
 	"log"
+	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -57,4 +59,12 @@ func main() {
 	room := fixtures.AddRoom(&store, types.Normal, false, 129, hotel.ID)
 	booking := fixtures.AddBooking(&store, room.ID, user.ID, 2, time.Now(), time.Now().AddDate(0, 0, 2))
 	fmt.Println("Booking ->", booking.ID)
+
+	for i := 0; i < 100; i++ {
+		hotelName := "Hotel " + strconv.Itoa(i)
+		location := "Location " + strconv.Itoa(i)
+		random := rand.Intn(5) + 1
+
+		fixtures.AddHotel(&store, hotelName, location, random, nil)
+	}
 }
