@@ -1,5 +1,4 @@
 POST http://localhost:8080/api/v1/room/674f4d7002cd8e33cb0f0131/book
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGJhci5jb20iLCJleHAiOjE3MzM3NDI1OTIsImlkIjoiNjc0ZjRkNzAwMmNkOGUzM2NiMGYwMTNjIiwicm9sZSI6ImFkbWluIn0.SfkYinaIGT9ac1ft7QfkNgpcNJyjmcwyKnYh9NfFVMU
 Content-Type: application/json
 
 {
@@ -10,19 +9,18 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8080/api/v1/booking/675698a49fdbae37e3898ac7/cancel
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGJhci5jb20iLCJleHAiOjE3MzM3NDI1OTIsImlkIjoiNjc0ZjRkNzAwMmNkOGUzM2NiMGYwMTNjIiwicm9sZSI6ImFkbWluIn0.SfkYinaIGT9ac1ft7QfkNgpcNJyjmcwyKnYh9NfFVMU
 
 ###
 GET http://localhost:8080/api/v1/booking
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGJhci5jb20iLCJleHAiOjE3MzM3NDI1OTIsImlkIjoiNjc0ZjRkNzAwMmNkOGUzM2NiMGYwMTNjIiwicm9sZSI6ImFkbWluIn0.SfkYinaIGT9ac1ft7QfkNgpcNJyjmcwyKnYh9NfFVMU
+Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY0MTY0NzUsInJvbGUiOiJndWVzdCIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJ1c2VyX2lkIjoiNjc3Zjc2ZTJjZDIxODgzMjFiNzk4MjhlIn0.7ANclVY7otgnStvYeyQfoRGIuDg9ZM9Jl3btPbbtEzU
+
 
 ###
 GET http://localhost:8080/api/v1/rooms
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGJhci5jb20iLCJleHAiOjE3MzM3NDI1OTIsImlkIjoiNjc0ZjRkNzAwMmNkOGUzM2NiMGYwMTNjIiwicm9sZSI6ImFkbWluIn0.SfkYinaIGT9ac1ft7QfkNgpcNJyjmcwyKnYh9NfFVMU
+Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY0MTY0NzUsInJvbGUiOiJndWVzdCIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJ1c2VyX2lkIjoiNjc3Zjc2ZTJjZDIxODgzMjFiNzk4MjhlIn0.7ANclVY7otgnStvYeyQfoRGIuDg9ZM9Jl3btPbbtEzU
 
 ###
 GET http://localhost:8080/api/v1/booking/674f53dd08c9cc9be7e56f08
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGJhci5jb20iLCJleHAiOjE3MzM3NDI1OTIsImlkIjoiNjc0ZjRkNzAwMmNkOGUzM2NiMGYwMTNjIiwicm9sZSI6ImFkbWluIn0.SfkYinaIGT9ac1ft7QfkNgpcNJyjmcwyKnYh9NfFVMU
 
 ###
 POST http://localhost:8080/api/register
@@ -47,7 +45,6 @@ Content-Type: application/json
 ###
 PUT localhost:8080/api/v1/user/677f76e2cd2188321b79828e
 Content-Type: application/json
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hdEBmb28uY29tIiwiZXhwIjoxNzM2NDIxMTcxLCJpZCI6IjY3N2Y3NmUyY2QyMTg4MzIxYjc5ODI4ZSIsInJvbGUiOiJndWVzdCJ9.qtVPropUiqdWDFZ0gonDVbdI0TK_mweWSdUXJGWdX98
 
 {
   "firstName": "sadsadasd",
@@ -58,7 +55,6 @@ X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hdEBmb28uY29tIi
 ###
 POST http://localhost:8080/api/v1/hotel/6746e85e55ee8ee644830b5e
 Content-Type: application/json
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hdEBmb28uY29tIiwiZXhwIjoxNzM2NDIxMTcxLCJpZCI6IjY3N2Y3NmUyY2QyMTg4MzIxYjc5ODI4ZSIsInJvbGUiOiJndWVzdCJ9.qtVPropUiqdWDFZ0gonDVbdI0TK_mweWSdUXJGWdX98
 
 {
   "id": "6746e85e55ee8ee644830b5e",
@@ -76,12 +72,13 @@ X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hdEBmb28uY29tIi
 ###
 ### GET request to example server
 GET http://localhost:8080/api/v1/hotels
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGJhci5jb20iLCJleHAiOjE3MzM3Mzg1MzUsImlkIjoiNjc0ZjRkNzAwMmNkOGUzM2NiMGYwMTNjIiwicm9sZSI6Imd1ZXN0In0.uUKA44HcWoM112Lufx5D4tRkkwvo-Ks-UnRqDZowFjI
+Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY0MTY0NzUsInJvbGUiOiJndWVzdCIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJ1c2VyX2lkIjoiNjc3Zjc2ZTJjZDIxODgzMjFiNzk4MjhlIn0.7ANclVY7otgnStvYeyQfoRGIuDg9ZM9Jl3btPbbtEzU
 ###
 
 ### GET request to example server
 GET http://localhost:8080/api/v1/admin/users
-X-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hdEBmb28uY29tIiwiZXhwIjoxNzM2NDIxMTcxLCJpZCI6IjY3N2Y3NmUyY2QyMTg4MzIxYjc5ODI4ZSIsInJvbGUiOiJndWVzdCJ9.qtVPropUiqdWDFZ0gonDVbdI0TK_mweWSdUXJGWdX98
+Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY0MTY0NzUsInJvbGUiOiJndWVzdCIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJ1c2VyX2lkIjoiNjc3Zjc2ZTJjZDIxODgzMjFiNzk4MjhlIn0.7ANclVY7otgnStvYeyQfoRGIuDg9ZM9Jl3btPbbtEzU
+
 ###
 
 
