@@ -3,18 +3,19 @@ package db
 import (
 	"context"
 	"errors"
+	"hotelReservetion/shared"
+	"hotelReservetion/types"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"hotelReservetion/shared"
-	"hotelReservetion/types"
 )
 
 type HotelStore interface {
 	Insert(ctx context.Context, hotel *types.Hotel) (*types.Hotel, error)
 	Update(context.Context, shared.Map, shared.Map) error
-	GetHotels(context.Context, shared.Map) ([]*types.Hotel, error)
+	GetHotels(context.Context, shared.Map, *types.PaginationOptions) ([]*types.Hotel, error)
 	GetHotelByID(context.Context, string) (*types.Hotel, error)
 	UpdateHotel(context.Context, *types.Hotel, string) (*types.Hotel, error)
 }
@@ -28,8 +29,22 @@ func NewMongoHotelStore(client *mongo.Client) *MongoHotelStore {
 	return &MongoHotelStore{Client: client, Collection: client.Database(DBNAME).Collection("hotels")}
 }
 
-func (s *MongoHotelStore) GetHotels(ctx context.Context, filter shared.Map) ([]*types.Hotel, error) {
-	resp, err := s.Collection.Find(ctx, filter)
+func (s *MongoHotelStore) GetHotels(ctx context.Context, filter shared.Map, pagination *types.PaginationOptions) ([]*types.Hotel, error) {
+	opts := options.Find()
+
+	if pagination != nil {
+		opts.SetSkip((pagination.Page - 1) * pagination.PageSize)
+		opts.SetLimit(pagination.PageSize)
+
+		if pagination.SortBy != "" {
+			sortDirection := 1
+			if pagination.SortDesc {
+				sortDirection = -1
+			}
+			opts.SetSort(bson.D{{Key: pagination.SortBy, Value: sortDirection}})
+		}
+	}
+	resp, err := s.Collection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}

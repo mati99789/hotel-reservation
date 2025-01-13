@@ -73,7 +73,7 @@ Content-Type: application/json
 ###
 ### GET request to example server
 GET http://localhost:8080/api/v1/hotels
-Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY0MTY0NzUsInJvbGUiOiJndWVzdCIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJ1c2VyX2lkIjoiNjc3Zjc2ZTJjZDIxODgzMjFiNzk4MjhlIn0.7ANclVY7otgnStvYeyQfoRGIuDg9ZM9Jl3btPbbtEzU
+Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY3MDI5MTgsInJvbGUiOiJndWVzdCIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJ1c2VyX2lkIjoiNjc4M2Y0YmNiYzRmMTA4MzM3YjQ1OWFlIn0.SuOHfY3d7oOqHkxMepVDguXjtQdRSseij6KTqsO0Zgs
 ###
 
 ### GET request to example server

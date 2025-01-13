@@ -1,11 +1,13 @@
 package api
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"hotelReservetion/db"
 	"hotelReservetion/shared"
 	"hotelReservetion/types"
+	"hotelReservetion/utils"
+
+	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type HotelHandler struct {
@@ -28,7 +30,6 @@ func (s *HotelHandler) HandleGetHotelByID(c *fiber.Ctx) error {
 	}
 
 	hotel, err := s.store.Hotel.GetHotelByID(c.Context(), hotelId)
-
 	if err != nil {
 		return err
 	}
@@ -53,7 +54,10 @@ func (s *HotelHandler) HandleGetRooms(c *fiber.Ctx) error {
 }
 
 func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
-	hotels, err := h.store.Hotel.GetHotels(c.Context(), nil)
+
+	pagination := utils.ExtractPaginationFromRequest(c)
+
+	hotels, err := h.store.Hotel.GetHotels(c.Context(), nil, pagination)
 	if err != nil {
 		return err
 	}
@@ -80,5 +84,4 @@ func (h *HotelHandler) HandleHotelUpdate(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(updatedHotel)
-
 }
