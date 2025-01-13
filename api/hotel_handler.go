@@ -54,7 +54,6 @@ func (s *HotelHandler) HandleGetRooms(c *fiber.Ctx) error {
 }
 
 func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
-
 	pagination := utils.ExtractPaginationFromRequest(c)
 
 	hotels, err := h.store.Hotel.GetHotels(c.Context(), nil, pagination)
@@ -62,7 +61,8 @@ func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(hotels)
+	response := utils.NewResourceResponse(len(hotels), int(pagination.Page), hotels)
+	return c.JSON(response)
 }
 
 func (h *HotelHandler) HandleHotelUpdate(c *fiber.Ctx) error {
